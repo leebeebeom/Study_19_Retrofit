@@ -10,13 +10,17 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
+//어댑터 클래스
 public class WeatherAdapter extends BaseAdapter {
     private List<Weather> mItems = new ArrayList<>();
     private final HashMap<String, Integer> mWeatherMap = new HashMap<>();
+    private String mBase_time = "";
 
-    public void setItems(List<Weather> items) {
+    public void setItems(List<Weather> items, String base_time) {
+        //객체 초기화
+        mBase_time = base_time;
         mItems = items;
+        //날씨 아이콘 맵
         mWeatherMap.put("맑음", R.drawable.sunnypng);
         mWeatherMap.put("구름", R.drawable.cloud);
         mWeatherMap.put("흐림", R.drawable.foggy);
@@ -46,7 +50,8 @@ public class WeatherAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        MYVG viewHolder = new MYVG();
+        //뷰홀더 패턴
+        MYVH viewHolder = new MYVH();
         if (convertView == null) {
             convertView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_weather, parent, false);
@@ -57,25 +62,39 @@ public class WeatherAdapter extends BaseAdapter {
 
             convertView.setTag(viewHolder);
         } else {
-            viewHolder = (MYVG) convertView.getTag();
+            viewHolder = (MYVH) convertView.getTag();
         }
+        //데이터 바인딩
         Weather weather = mItems.get(position);
+        //도시명
         viewHolder.cityText.setText(getCity(weather));
+        //날씨 텍스트
         String weatherText = getWeatherText(weather);
         viewHolder.weatherText.setText(weatherText);
+        //날씨 아이콘
         Integer weatherIcon = mWeatherMap.get(weatherText);
         if (weatherIcon != null) {
             viewHolder.weatherIcon.setImageResource(weatherIcon);
         }
+        //온도
         String temp = weather.getResponse().getBody().getItems().getItem().get(4).getFcstValue();
         viewHolder.tempText.setText(String.format("%s℃", temp));
 
         return convertView;
     }
 
+    //날씨 텍스트 구하기
     private String getWeatherText(Weather weather) {
-        String ptyfcstValue = weather.getResponse().getBody().getItems().getItem().get(1).getFcstValue();
-        String styfcstValue = weather.getResponse().getBody().getItems().getItem().get(3).getFcstValue();
+        String ptyfcstValue = "";
+        String styfcstValue = "";
+        //베이스 타임마다 가져오는 데이터 순서가 달라서 설정해줌
+        if (mBase_time.equals("0200") || mBase_time.equals("0800") || mBase_time.equals("1400") || mBase_time.equals("2000")) {
+            ptyfcstValue = weather.getResponse().getBody().getItems().getItem().get(1).getFcstValue();
+            styfcstValue = weather.getResponse().getBody().getItems().getItem().get(5).getFcstValue();
+        } else if (mBase_time.equals("0500") || mBase_time.equals("1100") || mBase_time.equals("1700") || mBase_time.equals("2300")) {
+            ptyfcstValue = weather.getResponse().getBody().getItems().getItem().get(1).getFcstValue();
+            styfcstValue = weather.getResponse().getBody().getItems().getItem().get(3).getFcstValue();
+        }
         String weatherText = "";
         switch (ptyfcstValue) {
             case "0":
@@ -114,6 +133,7 @@ public class WeatherAdapter extends BaseAdapter {
         return weatherText;
     }
 
+    //도시명 구하기
     private String getCity(Weather weather) {
         String city = "";
         int nx = weather.getResponse().getBody().getItems().getItem().get(0).getNx();
@@ -156,7 +176,8 @@ public class WeatherAdapter extends BaseAdapter {
         return city;
     }
 
-    private static class MYVG {
+    //뷰홀더
+    private static class MYVH {
         ImageView weatherIcon;
         TextView cityText;
         TextView weatherText;

@@ -1,5 +1,5 @@
 package com.beebeom.a19_retrofit;
-
+//경도 위도 모델 클래스
 public class LocalNxNy {
     private int nx;
     private int ny;

@@ -1,7 +1,7 @@
 package com.beebeom.a19_retrofit;
 
 import java.util.List;
-
+//POJO 클래스
 public class Weather {
 
     private Response response;
