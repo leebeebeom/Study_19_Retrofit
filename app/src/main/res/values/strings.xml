@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">19_Retrofit</string>
+    <string name="weather_icon">weather_icon</string>
+    <string name="pleas_refresh">\n\n\n당겨서 새로고침 해주세여ㅠㅠ</string>
+</resources>
